@@ -1,0 +1,166 @@
+{
+  "name": "Web Form Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Request an Installation\n",
+        "formDescription": "Fill out this form to request an\ninstallation. We'll reach out via email to\nfinalize your appointment.|",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Email Address",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Preferred Install Date",
+              "fieldType": "date"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6b1d0116-b8c1-4c09-b377-e57846500899",
+      "name": "On form submission",
+      "webhookId": "bda32fbb-31ca-4d21-a18e-be064dfb5037"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1a8e3d0b-c80b-46d7-8474-80b789f36263",
+              "leftValue": "={{ $json['Preferred Install Date'].toDateTime() }}",
+              "rightValue": "={{ $now.plus(7,'days') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "75f7da92-1e47-43ac-a411-087273cec5a2",
+      "name": "Is Within 7 days"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        400,
+        128
+      ],
+      "id": "a1472ead-af87-4537-b143-4c19a3f59645",
+      "name": "todo"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AGYEYR8F2",
+          "mode": "list",
+          "cachedResultName": "sales"
+        },
+        "text": "=New install reqdest (within 7 days).\nContact email:{{ $json['Email Address'] }}\nPreferred install date:{{ $json['Preferred Install Date'] }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "5f3db597-ce08-4159-b8e6-6786257b575b",
+      "name": "Send a message",
+      "webhookId": "2caacc12-12d0-4fe7-bc1c-4b8e273c45b6",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "tIs2y2DtnpKYe5As",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "✅ When a web form is submitted.\n\n✅ If the Installation Date is within 7 days from today.\n\n✅ Send a message to Slack",
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "0aee39af-72fd-43ea-9a3d-f064c5112ab6",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Is Within 7 days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Within 7 days": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "todo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "97117836-69ac-476a-b12f-49563990f0ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d30b67eb035e55ddac78823bcabef8482f8f445b4fe4d75d695702761c9d973b"
+  },
+  "id": "bFF1VnKFBemg3eUE",
+  "tags": []
+}
